@@ -1,0 +1,27 @@
+{
+  "name": "post_me_server",
+  "version": "1.0.0",
+  "description": "server for post_me_daddy",
+  "main": "index.js",
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js",
+    "dev2": "nodemon --exec ts-node dist/index.js",
+    "start": "node dist/index.js",
+    "start2": "ts-node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "^5.6.14",
+    "@mikro-orm/postgresql": "^5.6.14",
+    "pg": "^8.10.0"
+  }
+}
