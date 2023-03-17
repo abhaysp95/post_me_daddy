@@ -14,20 +14,22 @@ const http_1 = __importDefault(require("http"));
 const type_graphql_1 = require("type-graphql");
 const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const hello_1 = require("./resolvers/hello");
+const post_1 = require("./resolvers/post");
 const main = async () => {
     const orm = await core_1.MikroORM.init(mikro_orm_config_1.default);
     orm.getMigrator().up();
+    const em = orm.em.fork();
     const app = (0, express_1.default)();
     const httpServer = http_1.default.createServer(app);
     const apolloServer = new server_1.ApolloServer({
         schema: await (0, type_graphql_1.buildSchema)({
-            resolvers: [hello_1.HelloResolver],
+            resolvers: [hello_1.HelloResolver, post_1.PostResolver],
             validate: false,
         }),
         plugins: [(0, drainHttpServer_1.ApolloServerPluginDrainHttpServer)({ httpServer })]
     });
     await apolloServer.start();
-    app.use('/graphql', (0, cors_1.default)(), (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, { context: async ({ req }) => ({ token: req.headers.token }) }));
+    app.use('/graphql', (0, cors_1.default)(), (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, { context: async ({ req }) => ({ token: req.headers.token, em: em }) }));
     app.get('/:name', (request, response) => {
         response.write(`Hello ${request.params.name}`, () => { console.log(`Sent hello to ${request.params.name}`); });
         response.end().status(200);

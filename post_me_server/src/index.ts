@@ -15,6 +15,7 @@ import {__prod__} from "./constants";
 // import { Post } from "./entities/Post";
 import mikroConfig from "./mikro-orm.config";
 import {HelloResolver} from "./resolvers/hello";
+import {PostResolver} from './resolvers/post';
 
 const main =
     async () => {
@@ -24,7 +25,7 @@ const main =
   /* const generator = orm.getSchemaGenerator();
   await generator.createSchema(); */
 
-  // const em = orm.em.fork()
+  const em = orm.em.fork()
   /* const post = em.create(Post, {title: 'my first post'}); // an instance of
   post await em.persistAndFlush(post); */
 
@@ -39,7 +40,7 @@ const main =
 
   const apolloServer = new ApolloServer({
     schema : await buildSchema({
-      resolvers : [ HelloResolver ],
+      resolvers : [ HelloResolver, PostResolver ],
       validate : false,
     }),
     // to drain the "httpServer" for graceful shutdown of the server
@@ -48,10 +49,14 @@ const main =
   await apolloServer.start();
 
   // using a middleware (order of app.use() for middleware matters)
-  app.use('/graphql', cors<cors.CorsRequest>(), json(),
-          expressMiddleware(
-              apolloServer,
-              {context : async ({req}) => ({token : req.headers.token})}));
+  app.use(
+      '/graphql', cors<cors.CorsRequest>(), json(),
+      expressMiddleware(
+          apolloServer,
+          // context is accessible by all resolvers (passing context to
+          // integration function of choice, either expressMiddleware() or
+          // startStandaloneServer())
+          {context : async ({req}) => ({token : req.headers.token, em : em})}));
 
   app.get('/:name',
           (request, response) => {
@@ -76,8 +81,8 @@ const main =
               listen: { port: 4000 },
       }); */
 
-  await new Promise<void>((resolve) =>
-							  httpServer.listen({port : 4000}, resolve));
+      await new Promise<void>((resolve) =>
+                                  httpServer.listen({port : 4000}, resolve));
   console.log("Server running at: http://localhost:4000");
   // just something to try, will finish later
   /* httpServer.on('error', (e: Error) => {
