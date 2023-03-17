@@ -23,5 +23,5 @@ export class Post {
 
 	@Field()
 	@Property(/* { default: 'name' } */)
-	title!: String;
+	title!: string;
 }
