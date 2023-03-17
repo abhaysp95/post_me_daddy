@@ -75,9 +75,25 @@ const main =
       /* const { url } = await startStandaloneServer(apolloServer, {
               listen: { port: 4000 },
       }); */
-      await new Promise<void>((resolve) =>
-                                  httpServer.listen({port : 4000}, resolve));
+
+  await new Promise<void>((resolve) =>
+							  httpServer.listen({port : 4000}, resolve));
   console.log("Server running at: http://localhost:4000");
+  // just something to try, will finish later
+  /* httpServer.on('error', (e: Error) => {
+    console.log("error name:", e.name)
+    if (e.name === 'EADDRINUSE') {
+      console.log("Address already in use. Retrying...")
+      setTimeout(async () => {
+        httpServer.close();
+        await new Promise<void>((resolve) =>
+                                    httpServer.listen({port : 4000}, resolve));
+      }, 1000);
+    }
+    else {
+      console.error("Can't connect:", e)
+    }
+  }) */
 }
 
 main().catch(err => { console.error(err); });
