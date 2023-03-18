@@ -4,6 +4,7 @@ import path from "path";
 // import { MikroORM } from "@mikro-orm/postgresql";
 import {__prod__} from "./constants";
 import {Post} from "./entities/Post";
+import { User } from "./entities/User";
 
 export default defineConfig({
   migrations : {
@@ -15,7 +16,7 @@ export default defineConfig({
                              // files, but not .d.ts)
     disableForeignKeys : false
   },
-  entities : [ Post ], // no need for `entitiesTs` this way
+  entities : [ Post, User ], // no need for `entitiesTs` this way
   dbName : 'post_me_daddy',
   type : 'postgresql', // one of `mongo` | `mysql` | `mariadb` | `postgresql` |
                        // `sqlite`

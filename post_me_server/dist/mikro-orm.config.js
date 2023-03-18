@@ -7,6 +7,7 @@ const core_1 = require("@mikro-orm/core");
 const path_1 = __importDefault(require("path"));
 const constants_1 = require("./constants");
 const Post_1 = require("./entities/Post");
+const User_1 = require("./entities/User");
 exports.default = (0, core_1.defineConfig)({
     migrations: {
         path: path_1.default.join(__dirname, './migrations'),
@@ -14,7 +15,7 @@ exports.default = (0, core_1.defineConfig)({
         glob: '!(*.d).{js,ts}',
         disableForeignKeys: false
     },
-    entities: [Post_1.Post],
+    entities: [Post_1.Post, User_1.User],
     dbName: 'post_me_daddy',
     type: 'postgresql',
     user: 'pgt',
