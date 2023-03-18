@@ -19,15 +19,18 @@ let User = class User {
     }
 };
 __decorate([
+    (0, type_graphql_1.Field)(() => type_graphql_1.ID),
     (0, core_1.PrimaryKey)(),
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
+    (0, core_1.Property)({ type: Date }),
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
+    (0, core_1.Property)({ type: Date, onUpdate: () => new Date() }),
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
 __decorate([
