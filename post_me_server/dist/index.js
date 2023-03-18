@@ -15,6 +15,7 @@ const type_graphql_1 = require("type-graphql");
 const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const hello_1 = require("./resolvers/hello");
 const post_1 = require("./resolvers/post");
+const user_1 = require("./resolvers/user");
 const main = async () => {
     const orm = await core_1.MikroORM.init(mikro_orm_config_1.default);
     orm.getMigrator().up();
@@ -23,7 +24,7 @@ const main = async () => {
     const httpServer = http_1.default.createServer(app);
     const apolloServer = new server_1.ApolloServer({
         schema: await (0, type_graphql_1.buildSchema)({
-            resolvers: [hello_1.HelloResolver, post_1.PostResolver],
+            resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
         plugins: [(0, drainHttpServer_1.ApolloServerPluginDrainHttpServer)({ httpServer })]
