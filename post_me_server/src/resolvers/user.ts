@@ -59,23 +59,14 @@ export class UserResolver {
         } ]
       }
     }
-    if (options.password.length <= 8) {
+    if (options.password.length <= 2) {
       return {
         errors: [ {
           field : 'username',
-          message : 'Provided password with length > 4',
+          message : 'Provided password with length > 2',
         } ]
       }
     }
-	let user = await em.findOne(User, { username: options.username });
-	if (user) {
-		return {
-			errors: [ {
-				field: 'username',
-				message: 'Username already registered',
-			} ]
-		}
-	}
     const hashedPassword = await argon2.hash(options.password, {
       type : argon2.argon2id, // hybrid one
       hashLength : 64,
@@ -85,9 +76,17 @@ export class UserResolver {
       // random salt and stores it,
       // https://github.com/ranisalt/node-argon2/issues/76#issuecomment-291553840
     });
-    user = em.create(
+    const user = em.create(
         User, {username : options.username, password : hashedPassword});
-    await em.persistAndFlush(user);
+    try {
+      await em.persistAndFlush(user);
+    } catch (error) {
+      if (error.code === "23505" || error.detail.includes("already exists")) {
+        return {
+          errors: [ {field : 'username', message : 'Username already exists'} ]
+        }
+      }
+    }
     return {user};
   }
 

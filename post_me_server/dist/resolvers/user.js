@@ -68,20 +68,11 @@ let UserResolver = class UserResolver {
                     }]
             };
         }
-        if (options.password.length <= 8) {
+        if (options.password.length <= 2) {
             return {
                 errors: [{
                         field: 'username',
-                        message: 'Provided password with length > 4',
-                    }]
-            };
-        }
-        let user = await em.findOne(User_1.User, { username: options.username });
-        if (user) {
-            return {
-                errors: [{
-                        field: 'username',
-                        message: 'Username already registered',
+                        message: 'Provided password with length > 2',
                     }]
             };
         }
@@ -91,8 +82,17 @@ let UserResolver = class UserResolver {
             memoryCost: 2 ** 16,
             timeCost: 5,
         });
-        user = em.create(User_1.User, { username: options.username, password: hashedPassword });
-        await em.persistAndFlush(user);
+        const user = em.create(User_1.User, { username: options.username, password: hashedPassword });
+        try {
+            await em.persistAndFlush(user);
+        }
+        catch (error) {
+            if (error.code === "23505" || error.detail.includes("already exists")) {
+                return {
+                    errors: [{ field: 'username', message: 'Username already exists' }]
+                };
+            }
+        }
         return { user };
     }
     async login(options, { em }) {
