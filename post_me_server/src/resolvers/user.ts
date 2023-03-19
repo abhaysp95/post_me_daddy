@@ -51,6 +51,8 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(@Arg("options") options: UsernamePasswordInput,
                  @Ctx() { em }: MyContext): Promise<UserResponse> {
+
+    // validation
     if (options.username.length <= 2) {
       return {
         errors: [ {
@@ -67,6 +69,8 @@ export class UserResolver {
         } ]
       }
     }
+
+    // to store hashed password
     const hashedPassword = await argon2.hash(options.password, {
       type : argon2.argon2id, // hybrid one
       hashLength : 64,
@@ -81,6 +85,7 @@ export class UserResolver {
     try {
       await em.persistAndFlush(user);
     } catch (error) {
+      // validate if username provided already exists
       if (error.code === "23505" || error.detail.includes("already exists")) {
         return {
           errors: [ {field : 'username', message : 'Username already exists'} ]
@@ -94,7 +99,7 @@ export class UserResolver {
   async login(@Arg("options") options: UsernamePasswordInput,
               @Ctx() { em }: MyContext): Promise<UserResponse|null> {
     const user = await em.findOne(User, {username : options.username});
-    if (!user) {
+    if (!user) { // username provided doesn't exist
       return {
         errors: [ {
           field : 'username',
@@ -103,7 +108,7 @@ export class UserResolver {
       }
     }
     const hashPassword = await argon2.verify(user.password, options.password);
-    if (!hashPassword) {
+    if (!hashPassword) { // password provided didn't matched
       return {
         errors : [ {
           field : 'password',
