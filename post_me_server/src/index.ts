@@ -6,9 +6,12 @@ import {
 // import {startStandaloneServer} from '@apollo/server/standalone';
 import {MikroORM} from "@mikro-orm/core";
 import {json} from "body-parser";
+import RedisStore from 'connect-redis';
 import cors from "cors";
 import express from "express";
+import session from 'express-session';
 import http from "http";
+import {createClient} from 'redis';
 import {buildSchema} from 'type-graphql';
 
 import {__prod__} from "./constants";
@@ -16,7 +19,8 @@ import {__prod__} from "./constants";
 import mikroConfig from "./mikro-orm.config";
 import {HelloResolver} from "./resolvers/hello";
 import {PostResolver} from './resolvers/post';
-import { UserResolver } from './resolvers/user';
+import {UserResolver} from './resolvers/user';
+import { MyContext } from './types';
 
 const main =
     async () => {
@@ -39,6 +43,36 @@ const main =
           response.send(`Hello ${request.params.name}`).status(200);
   }) */
 
+  // initialize redis client
+  let redisClient = createClient();
+  redisClient.connect().catch(console.error);
+
+  // initialize redis store
+  let redisStore = new RedisStore({
+    client : redisClient,
+    prefix : "myapp:",
+    disableTouch : true, // atleast, for now
+  })
+
+  // initialize session storage middleware
+  // this middleware needs to run before apollo-graphql middleware, thus order
+  // matters
+  app.use(session({
+    name : 'qid',
+    store : redisStore,
+    resave : false, // recommended: fore lightweight session keep alive
+    saveUninitialized : false,
+    secret : "why keyboard cat",
+    cookie : {
+      maxAge : 86400 * 365 * 10, // 10 years
+      httpOnly : true,
+      sameSite :
+          "lax", // top-level, safe cross-site requests,
+                 // https://stackoverflow.com/questions/59990864/what-is-the-difference-between-samesite-lax-and-samesite-strict
+      secure : __prod__, // set https-only cookie for prod env
+    }
+  }))
+
   const apolloServer = new ApolloServer({
     schema : await buildSchema({
       resolvers : [ HelloResolver, PostResolver, UserResolver ],
@@ -57,7 +91,7 @@ const main =
           // context is accessible by all resolvers (passing context to
           // integration function of choice, either expressMiddleware() or
           // startStandaloneServer())
-          {context : async ({req}) => ({token : req.headers.token, em : em})}));
+          {context : async ({req, res}): Promise<MyContext> => ({ req: req, res: res, em : em})}));
 
   app.get('/:name',
           (request, response) => {
@@ -102,4 +136,5 @@ const main =
   }) */
 }
 
-main().catch(err => { console.error(err); });
+                main()
+                    .catch(err => { console.error(err); });
