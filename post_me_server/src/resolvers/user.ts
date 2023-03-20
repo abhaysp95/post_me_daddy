@@ -97,7 +97,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse, {nullable : true})
   async login(@Arg("options") options: UsernamePasswordInput,
-              @Ctx() { em }: MyContext): Promise<UserResponse|null> {
+              @Ctx() { em, req }: MyContext): Promise<UserResponse|null> {
     const user = await em.findOne(User, {username : options.username});
     if (!user) { // username provided doesn't exist
       return {
@@ -116,6 +116,10 @@ export class UserResolver {
         } ]
       };
     }
+
+	// store user id within cookie for a session
+	req.session.userId = user.id;
+
     return {
       user,
     };

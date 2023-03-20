@@ -38,6 +38,10 @@ const main =
   console.log(posts); */
 
   const app = express();
+  /* app.set("trust proxy", !__prod__);
+  app.set("Access-Control-Allow-Origin", "https://studio.apollographql.com");
+  app.set("Access-Control-Allow-Credentials", true); */
+
   const httpServer = http.createServer(app);
   /* app.get('/:name', (request, response) => {
           response.send(`Hello ${request.params.name}`).status(200);
@@ -46,6 +50,8 @@ const main =
   // initialize redis client
   let redisClient = createClient();
   redisClient.connect().catch(console.error);
+
+  /* remember to install "redis server" and make it running on your system (or any other connecting way you desire) */
 
   // initialize redis store
   let redisStore = new RedisStore({
@@ -83,6 +89,7 @@ const main =
   });
   await apolloServer.start();
 
+  // app.use(cors());
   // using a middleware (order of app.use() for middleware matters)
   app.use(
       '/graphql', cors<cors.CorsRequest>(), json(),
@@ -91,7 +98,8 @@ const main =
           // context is accessible by all resolvers (passing context to
           // integration function of choice, either expressMiddleware() or
           // startStandaloneServer())
-          {context : async ({req, res}): Promise<MyContext> => ({ req: req, res: res, em : em})}));
+          {context : async ({req, res}): Promise<MyContext> => ({ req, res, em })}
+	  ));
 
   app.get('/:name',
           (request, response) => {
@@ -117,7 +125,7 @@ const main =
       }); */
 
       await new Promise<void>((resolve) =>
-                                  httpServer.listen({port : 4000}, resolve));
+                                  httpServer.listen({port : 4000, host: "0.0.0.0" }, resolve));
   console.log("Server running at: http://localhost:4000");
   // just something to try, will finish later
   /* httpServer.on('error', (e: Error) => {
