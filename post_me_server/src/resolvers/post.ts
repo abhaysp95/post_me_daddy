@@ -1,4 +1,4 @@
-import {MyContext} from "src/types";
+import {ResolverContext} from "src/types";
 import {Arg, Ctx, ID, Mutation, Query, Resolver} from "type-graphql";
 
 import {Post} from "../entities/Post";
@@ -7,19 +7,19 @@ import {Post} from "../entities/Post";
 export class PostResolver {
 
   @Query(() => [Post])
-  posts(@Ctx() { em }: MyContext): Promise<Post[]> {
+  posts(@Ctx() { em }: ResolverContext): Promise<Post[]> {
     return em.find(Post, {})
   }
 
   @Query(() => Post, {nullable : true})
   /* could be null if nothing found with given id */
-  post(@Arg('id', () => ID) id: number, @Ctx() { em }: MyContext):
+  post(@Arg('id', () => ID) id: number, @Ctx() { em }: ResolverContext):
       Promise<Post|null> {
     return em.findOne(Post, {id})
   }
 
   @Mutation(() => Post)
-  async createPost(@Arg("title") title: string, @Ctx() { em }: MyContext):
+  async createPost(@Arg("title") title: string, @Ctx() { em }: ResolverContext):
       Promise<Post> {
     let post = em.create(Post, {title});
     await em.persistAndFlush(post);
@@ -29,7 +29,7 @@ export class PostResolver {
   @Mutation(() => Post, {nullable : true})
   async updatePost(@Arg("id", () => ID) id: number,
                    @Arg("title", {nullable : true}) title: string,
-                   @Ctx() { em }: MyContext): Promise<Post|null> {
+                   @Ctx() { em }: ResolverContext): Promise<Post|null> {
     let post = await em.findOne(Post, {id})
     if (!post) {
       return null;
@@ -43,7 +43,7 @@ export class PostResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletePost(@Arg("id", () => ID) id: number, @Ctx() { em }: MyContext):
+  async deletePost(@Arg("id", () => ID) id: number, @Ctx() { em }: ResolverContext):
       Promise<boolean> {
     /* using nativeDelete for conditional deletion */
     return await em.nativeDelete(Post, {id}).then(_ => true, _ => false);
