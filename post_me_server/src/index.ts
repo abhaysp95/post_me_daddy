@@ -69,9 +69,10 @@ const main =
     store : redisStore,
     resave : false, // recommended: fore lightweight session keep alive
     saveUninitialized : false,
-    secret : "why keyboard cat",
+    secret : "why keyboard cat", // decrypt the cookie (should be randomly
+                                 // generated and better used as env variable)
     cookie : {
-      maxAge : 86400 * 365 * 10, // 10 years
+      maxAge : 86400, // a day
       httpOnly : true,
       sameSite :
           "lax", // top-level, safe cross-site requests,

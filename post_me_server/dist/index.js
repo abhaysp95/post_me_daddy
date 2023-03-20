@@ -40,7 +40,7 @@ const main = async () => {
         saveUninitialized: false,
         secret: "why keyboard cat",
         cookie: {
-            maxAge: 86400 * 365 * 10,
+            maxAge: 86400,
             httpOnly: true,
             sameSite: "lax",
             secure: constants_1.__prod__,
