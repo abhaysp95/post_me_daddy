@@ -16,7 +16,7 @@ declare module 'express-session' {
 	}
 }
 
-export type MyContext = {
+export type ResolverContext = {
 	em: EntityManager<IDatabaseDriver<Connection>>;
 	req: Request & { session: session.Session }
 	res: Response;

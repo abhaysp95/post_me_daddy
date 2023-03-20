@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import {MyContext} from "src/types";
+import {ResolverContext} from "src/types";
 import {
   Arg,
   Ctx,
@@ -50,7 +50,7 @@ export class UserResolver {
   } */
 
   @Query(() => User, {nullable : true})
-  async me(@Ctx() { req, em }: MyContext): Promise<User|null> {
+  async me(@Ctx() { req, em }: ResolverContext): Promise<User|null> {
     if (!req.session.userId) {
       return null;
     }
@@ -59,7 +59,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(@Arg("options") options: UsernamePasswordInput,
-                 @Ctx() { em }: MyContext): Promise<UserResponse> {
+                 @Ctx() { em, req }: ResolverContext): Promise<UserResponse> {
 
     // validation
     if (options.username.length <= 2) {
@@ -101,12 +101,17 @@ export class UserResolver {
         }
       }
     }
+
+    // store used id in session, essentially it'll set cookie on the user and
+    // keep them logged in
+    req.session.userId = user.id;
+
     return {user};
   }
 
   @Mutation(() => UserResponse, {nullable : true})
   async login(@Arg("options") options: UsernamePasswordInput,
-              @Ctx() { em, req }: MyContext): Promise<UserResponse|null> {
+              @Ctx() { em, req }: ResolverContext): Promise<UserResponse|null> {
     const user = await em.findOne(User, {username : options.username});
     if (!user) { // username provided doesn't exist
       return {

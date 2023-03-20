@@ -54,7 +54,9 @@ const main = async () => {
         plugins: [(0, drainHttpServer_1.ApolloServerPluginDrainHttpServer)({ httpServer })]
     });
     await apolloServer.start();
-    app.use('/graphql', (0, cors_1.default)(), (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, { context: async ({ req, res }) => ({ req, res, em }) }));
+    app.use('/graphql', (0, cors_1.default)(), (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, {
+        context: async ({ req, res }) => ({ req, res, em })
+    }));
     app.get('/:name', (request, response) => {
         response.write(`Hello ${request.params.name}`, () => { console.log(`Sent hello to ${request.params.name}`); });
         response.end().status(200);

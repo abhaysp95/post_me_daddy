@@ -11,8 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
+const types_1 = require("src/types");
 const type_graphql_1 = require("type-graphql");
 const Post_1 = require("../entities/Post");
 let PostResolver = class PostResolver {
@@ -47,7 +49,7 @@ __decorate([
     (0, type_graphql_1.Query)(() => [Post_1.Post]),
     __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [typeof (_a = typeof types_1.MyContext !== "undefined" && types_1.MyContext) === "function" ? _a : Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "posts", null);
 __decorate([
@@ -55,7 +57,7 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.ID)),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, typeof (_b = typeof types_1.MyContext !== "undefined" && types_1.MyContext) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "post", null);
 __decorate([
@@ -63,7 +65,7 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)("title")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof types_1.MyContext !== "undefined" && types_1.MyContext) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([
@@ -72,7 +74,7 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)("title", { nullable: true })),
     __param(2, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Object]),
+    __metadata("design:paramtypes", [Number, String, typeof (_d = typeof types_1.MyContext !== "undefined" && types_1.MyContext) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "updatePost", null);
 __decorate([
@@ -80,7 +82,7 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)("id", () => type_graphql_1.ID)),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, typeof (_e = typeof types_1.MyContext !== "undefined" && types_1.MyContext) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "deletePost", null);
 PostResolver = __decorate([
