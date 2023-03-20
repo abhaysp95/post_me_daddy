@@ -7,6 +7,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver
 } from "type-graphql";
 
@@ -47,6 +48,14 @@ export class UserResolver {
            @Ctx() { em }: MyContext): Promise<User> {
                            // ...
   } */
+
+  @Query(() => User, {nullable : true})
+  async me(@Ctx() { req, em }: MyContext): Promise<User|null> {
+    if (!req.session.userId) {
+      return null;
+    }
+    return await em.findOne(User, {id : req.session.userId});
+  }
 
   @Mutation(() => UserResponse)
   async register(@Arg("options") options: UsernamePasswordInput,
@@ -117,8 +126,8 @@ export class UserResolver {
       };
     }
 
-	// store user id within cookie for a session
-	req.session.userId = user.id;
+    // store user id within cookie for a session
+    req.session.userId = user.id;
 
     return {
       user,
