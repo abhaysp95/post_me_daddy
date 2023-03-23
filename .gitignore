@@ -1,3 +1,5 @@
 **/node_modules/
+.env
+**/.env
 post_me_server/src/migrations/.snapshot-post_me_daddy.json
 notes.md
