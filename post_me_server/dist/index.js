@@ -20,14 +20,33 @@ const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const hello_1 = require("./resolvers/hello");
 const post_1 = require("./resolvers/post");
 const user_1 = require("./resolvers/user");
+async function retry(command) {
+    let retries = 5;
+    while (retries) {
+        try {
+            console.log("retry: ", retry);
+            return command();
+        }
+        catch (err) {
+            console.log("retry error: ", err);
+            retries -= 1;
+            await new Promise(res => setTimeout(res, 2500));
+        }
+    }
+}
 const main = async () => {
-    const orm = await core_1.MikroORM.init(mikro_orm_config_1.default);
-    orm.getMigrator().up();
+    console.log("env: ", process.env);
+    const orm = await retry(() => { return core_1.MikroORM.init(mikro_orm_config_1.default); });
     const em = orm.em.fork();
     const app = (0, express_1.default)();
     const httpServer = http_1.default.createServer(app);
-    let redisClient = (0, redis_1.createClient)();
-    redisClient.connect().catch(console.error);
+    let redisClient = (0, redis_1.createClient)({
+        socket: {
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+        }
+    });
+    retry(() => { redisClient.connect(); });
     let redisStore = new connect_redis_1.default({
         client: redisClient,
         prefix: "myapp:",
@@ -38,7 +57,7 @@ const main = async () => {
         store: redisStore,
         resave: false,
         saveUninitialized: false,
-        secret: "why keyboard cat",
+        secret: process.env.SESSION_SECRET,
         cookie: {
             maxAge: 86400,
             httpOnly: true,

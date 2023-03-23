@@ -16,9 +16,11 @@ exports.default = (0, core_1.defineConfig)({
         disableForeignKeys: false
     },
     entities: [Post_1.Post, User_1.User],
-    dbName: 'post_me_daddy',
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    dbName: process.env.POSTGRES_DB_NAME,
     type: 'postgresql',
-    user: 'pgt',
+    user: process.env.POSTGRES_USER_NAME,
     debug: !constants_1.__prod__
 });
 //# sourceMappingURL=mikro-orm.config.js.map

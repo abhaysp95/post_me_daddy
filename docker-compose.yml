@@ -1,0 +1,28 @@
+---
+services:
+  backend:
+    build: ./post_me_server
+    depends_on:
+      - db_postgres
+      - db_redis
+    ports:
+      - 4000:4000
+
+  db_postgres:
+    environment:
+      - POSTGRES_USER="${POSTGRES_USER_NAME}"
+      - POSTGRES_DB="${POSTGRES_DB_NAME}"
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      # - POSTGRES_HOST_AUTH_METHOD=trust  # isn't recommended
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - post_me_server:/var/lib/postgres/data
+
+  db_redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+volumes:
+  post_me_server:

@@ -17,10 +17,12 @@ export default defineConfig({
     disableForeignKeys : false
   },
   entities : [ Post, User ], // no need for `entitiesTs` this way
-  dbName : 'post_me_daddy',
+  host: process.env.POSTGRES_HOST,  // named in docker-compose.yml
+  port: process.env.POSTGRES_PORT,
+  dbName : process.env.POSTGRES_DB_NAME,
   type : 'postgresql', // one of `mongo` | `mysql` | `mariadb` | `postgresql` |
                        // `sqlite`
-  user : 'pgt',
+  user : process.env.POSTGRES_USER_NAME,
   debug : !__prod__
 });
 

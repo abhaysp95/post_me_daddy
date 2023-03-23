@@ -4,7 +4,7 @@ import {
   ApolloServerPluginDrainHttpServer
 } from '@apollo/server/plugin/drainHttpServer';
 // import {startStandaloneServer} from '@apollo/server/standalone';
-import {MikroORM} from "@mikro-orm/core";
+import {Connection, IDatabaseDriver, MikroORM} from "@mikro-orm/core";
 import {json} from "body-parser";
 import RedisStore from 'connect-redis';
 import cors from "cors";
@@ -63,9 +63,14 @@ const main =
   }) */
 
   // initialize redis client
-  let redisClient = createClient();
-  retryConnection(() => {redisClient.connect()});
+  let redisClient = createClient({
+    socket : {
+      host : process.env.REDIS_HOST,
+      port : process.env.REDIS_PORT,
+    }
+  });
 
+  retryConnection(() => {redisClient.connect()});
 
   /* remember to install "redis server" and make it running on your system (or
    * any other connecting way you desire) */
@@ -85,7 +90,7 @@ const main =
     store : redisStore,
     resave : false, // recommended: fore lightweight session keep alive
     saveUninitialized : false,
-    secret : "why keyboard cat", // decrypt the cookie (should be randomly
+    secret : process.env.SESSION_SECRET!, // decrypt the cookie (should be randomly
                                  // generated and better used as env variable)
     cookie : {
       maxAge : 86400, // a day
