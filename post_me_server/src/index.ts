@@ -22,10 +22,25 @@ import {PostResolver} from './resolvers/post';
 import {UserResolver} from './resolvers/user';
 import {ResolverContext} from './types';
 
+async function retryConnection<T>(command: () => Promise<T>| void): Promise<T|void> {
+  let retries = 5;
+  while (retries) {
+    try {
+      console.log("retry: ", retryConnection);
+      return command();
+    } catch (err) {
+      console.log("retry error: ", err);
+      retries -= 1;
+      await new Promise(res => setTimeout(res, 2500));
+    }
+  }
+}
+
 const main =
     async () => {
-  const orm = await MikroORM.init(mikroConfig);
-  orm.getMigrator().up()
+
+  const orm = await retryConnection(() => { return MikroORM.init(mikroConfig); }) as
+              MikroORM<IDatabaseDriver<Connection>>;
 
   /* const generator = orm.getSchemaGenerator();
   await generator.createSchema(); */
@@ -49,7 +64,8 @@ const main =
 
   // initialize redis client
   let redisClient = createClient();
-  redisClient.connect().catch(console.error);
+  retryConnection(() => {redisClient.connect()});
+
 
   /* remember to install "redis server" and make it running on your system (or
    * any other connecting way you desire) */
