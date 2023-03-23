@@ -14,6 +14,7 @@ The project includes `docker-compose.yml` & `Dockerfile` for project setup. The 
 ```sh
 $ docker buildx install
 ```
+* fill up the `.env` file with the values (I've included the required env keys in the file)
 * copy the `.env` from root dir of project to `post_me_server` folder. (This step is needed because .env file is needed inside the container we're creating for backend of project)
 ```sh
 $ cp .env post_me_server/.env
