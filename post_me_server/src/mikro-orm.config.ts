@@ -19,6 +19,7 @@ export default defineConfig({
   entities : [ Post, User ], // no need for `entitiesTs` this way
   host: process.env.POSTGRES_HOST,  // named in docker-compose.yml
   port: process.env.POSTGRES_PORT,
+  password: process.env.POSTGRES_PASSWORD,
   dbName : process.env.POSTGRES_DB_NAME,
   type : 'postgresql', // one of `mongo` | `mysql` | `mariadb` | `postgresql` |
                        // `sqlite`
