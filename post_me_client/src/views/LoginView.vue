@@ -5,6 +5,6 @@ import Login from '../components/Login.vue';
 
 <template>
   <main>
-	  <login />
+	  <login class="mt-3" />
   </main>
 </template>

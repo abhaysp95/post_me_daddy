@@ -51,7 +51,7 @@ import { useMutation  } from '@urql/vue';
 				<span for="userpass" class="input-group-text">Password</span>
 				<input type="password" v-model="password" id="userpass" aria-label="password" />
 			</div>
-			<button type="submit" class="btn btn-primary">Submit</button>
+			<button type="submit" class="btn btn-success">Submit</button>
 		</form>
 		<div class="container">
 			<div v-if="userFetching">

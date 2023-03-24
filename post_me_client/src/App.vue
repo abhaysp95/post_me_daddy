@@ -17,7 +17,7 @@ provideClient(client);
 <template>
   <header>
     <div class="wrapper">
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <nav class="navbar bg-dark navbar-dark navbar-expand-lg">
 		  <div class="container-fluid">
 			  <div class="navbar-brand">
 				<RouterLink to="/">Post Me Daddy</RouterLink>

@@ -6,7 +6,7 @@ import router from './router'
 
 import "bootstrap/dist/css/bootstrap.css"
 
-// import './assets/main.css'
+import './assets/main.css'
 
 const app = createApp(App)
 
