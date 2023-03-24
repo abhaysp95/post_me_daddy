@@ -6,6 +6,9 @@ import { RouterLink, RouterView } from 'vue-router'
 const client = createClient({
 	url: "http://localhost:4000/graphql",
 	exchanges: [ dedupExchange, cacheExchange, fetchExchange ],
+	fetchOptions: {
+		credentials: "include",
+	}
 });
 
 provideClient(client);

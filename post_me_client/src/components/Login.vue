@@ -21,6 +21,10 @@ import { useMutation  } from '@urql/vue';
 		}`
 	);
 
+	const userFetching = registerMutation.fetching;
+	const userData = registerMutation.data;
+	const userError = registerMutation.error;
+
 	const onSubmit = () => {
 		console.log("form submitted", username.value, password.value)
 		const variables = {
@@ -30,6 +34,9 @@ import { useMutation  } from '@urql/vue';
 		registerMutation.executeMutation(variables).then(result => {
 			console.log(result);
 		})
+		console.log("data: ", registerMutation.data);
+		console.log("error: ", registerMutation.error);
+		console.log("fetching: ", registerMutation.fetching);
 	}
 </script>
 
@@ -46,5 +53,18 @@ import { useMutation  } from '@urql/vue';
 			</div>
 			<button type="submit" class="btn btn-primary">Submit</button>
 		</form>
+		<div class="container">
+			<div v-if="userFetching">
+				Loading...
+			</div>
+			<div v-else-if="userError">
+				Oh no ... {{ userError}}
+			</div>
+			<div v-else="userData">
+				<div v-if="userData">
+					some user data: {{ userData }}
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
