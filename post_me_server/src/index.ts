@@ -42,6 +42,10 @@ const main =
   const orm = await retryConnection(() => { return MikroORM.init(mikroConfig); }) as
               MikroORM<IDatabaseDriver<Connection>>;
 
+  if (orm) {
+	  await orm.getMigrator().up();
+  }
+
   /* const generator = orm.getSchemaGenerator();
   await generator.createSchema(); */
 
@@ -108,20 +112,23 @@ const main =
       validate : false,
     }),
     // to drain the "httpServer" for graceful shutdown of the server
-    plugins : [ ApolloServerPluginDrainHttpServer({httpServer}) ]
+    plugins : [ ApolloServerPluginDrainHttpServer({httpServer}) ],
   });
   await apolloServer.start();
 
-  // app.use(cors());
+  app.use(cors({  // use cors globally
+	  origin: "http://localhost:5173",  // client address (will be configures later)
+	  credentials: true,
+  }));
   // using a middleware (order of app.use() for middleware matters)
-  app.use('/graphql', cors<cors.CorsRequest>(), json(),
+  app.use('/graphql', /* cors<cors.CorsRequest>(), */ json(),
           expressMiddleware(apolloServer,
                             // context is accessible by all resolvers (passing
                             // context to integration function of choice, either
                             // expressMiddleware() or startStandaloneServer())
                             {
                               context : async({req, res}) :
-                                  Promise<ResolverContext> => ({req, res, em})
+                                  Promise<ResolverContext> => ({req, res, em}),
                             }));
 
   app.get('/:name',

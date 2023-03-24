@@ -20,11 +20,11 @@ const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const hello_1 = require("./resolvers/hello");
 const post_1 = require("./resolvers/post");
 const user_1 = require("./resolvers/user");
-async function retry(command) {
+async function retryConnection(command) {
     let retries = 5;
     while (retries) {
         try {
-            console.log("retry: ", retry);
+            console.log("retry: ", retryConnection);
             return command();
         }
         catch (err) {
@@ -35,8 +35,10 @@ async function retry(command) {
     }
 }
 const main = async () => {
-    console.log("env: ", process.env);
-    const orm = await retry(() => { return core_1.MikroORM.init(mikro_orm_config_1.default); });
+    const orm = await retryConnection(() => { return core_1.MikroORM.init(mikro_orm_config_1.default); });
+    if (orm) {
+        await orm.getMigrator().up();
+    }
     const em = orm.em.fork();
     const app = (0, express_1.default)();
     const httpServer = http_1.default.createServer(app);
@@ -46,7 +48,7 @@ const main = async () => {
             port: process.env.REDIS_PORT,
         }
     });
-    retry(() => { redisClient.connect(); });
+    retryConnection(() => { redisClient.connect(); });
     let redisStore = new connect_redis_1.default({
         client: redisClient,
         prefix: "myapp:",
@@ -70,11 +72,15 @@ const main = async () => {
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
-        plugins: [(0, drainHttpServer_1.ApolloServerPluginDrainHttpServer)({ httpServer })]
+        plugins: [(0, drainHttpServer_1.ApolloServerPluginDrainHttpServer)({ httpServer })],
     });
     await apolloServer.start();
-    app.use('/graphql', (0, cors_1.default)(), (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, {
-        context: async ({ req, res }) => ({ req, res, em })
+    app.use((0, cors_1.default)({
+        origin: "http://localhost:5173",
+        credentials: true,
+    }));
+    app.use('/graphql', (0, body_parser_1.json)(), (0, express4_1.expressMiddleware)(apolloServer, {
+        context: async ({ req, res }) => ({ req, res, em }),
     }));
     app.get('/:name', (request, response) => {
         response.write(`Hello ${request.params.name}`, () => { console.log(`Sent hello to ${request.params.name}`); });

@@ -66,6 +66,7 @@ let UserResolver = class UserResolver {
         return await em.findOne(User_1.User, { id: req.session.userId });
     }
     async register(options, { em, req }) {
+        var _a;
         if (options.username.length <= 2) {
             return {
                 errors: [{
@@ -93,7 +94,8 @@ let UserResolver = class UserResolver {
             await em.persistAndFlush(user);
         }
         catch (error) {
-            if (error.code === "23505" || error.detail.includes("already exists")) {
+            console.log("error", error);
+            if (error.code === "23505" || ((_a = error.detail) === null || _a === void 0 ? void 0 : _a.includes("already exists"))) {
                 return {
                     errors: [{ field: 'username', message: 'Username already exists' }]
                 };

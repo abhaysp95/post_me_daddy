@@ -95,7 +95,8 @@ export class UserResolver {
       await em.persistAndFlush(user);
     } catch (error) {
       // validate if username provided already exists
-      if (error.code === "23505" || error.detail.includes("already exists")) {
+	  console.log("error", error);
+      if (error.code === "23505" || error.detail?.includes("already exists")) {
         return {
           errors: [ {field : 'username', message : 'Username already exists'} ]
         }
