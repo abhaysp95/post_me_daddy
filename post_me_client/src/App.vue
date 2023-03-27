@@ -24,7 +24,7 @@ provideClient(client);
 			  </div>
 				<div class="collapse navbar-collapse">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-						<li class="nav-item"> <RouterLink class="nav-link active" to="/">Home</RouterLink> </li>
+						<li class="nav-item"> <RouterLink class="nav-link" to="/">Home</RouterLink> </li>
 						<li class="nav-item"> <RouterLink class="nav-link" to="/login">Login</RouterLink> </li>
 					</ul>
 				</div>

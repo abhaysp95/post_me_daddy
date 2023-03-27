@@ -1,31 +1,29 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useMutation  } from '@urql/vue';
-import type { RegisterMutation, UserResponse } from '@/gql/graphql';
 /* import { graphql } from '../gql'; */
 import { toErrorMap } from "../utils/toErrorMap"
+import router from '@/router';
 
 	const username = ref("");
 	const password = ref("");
 
-	const registerMutation = useMutation(`
-		mutation Register($username: String!, $password: String!) {
-		  register(options: { username: $username, password: $password }) {
-			errors {
-			  field
-			  message
-			}
-			user {
-			  id
-			  createdAt
-			  username
-			}
-		  }
-		}`
-	);
+	const loginMutation = useMutation(`
+	mutation Login($options: UsernamePasswordInput!) {
+	  login(options: $options) {
+		errors {
+		  message
+		  field
+		}
+		user {
+		  id
+		  username
+		}
+	  }
+	}`);
 
 
-	const userRegisterError = {
+	const userLoginError = {
 		state: ref(false),
 		message: ref(""),
 	}
@@ -36,23 +34,22 @@ import { toErrorMap } from "../utils/toErrorMap"
 			username: username.value,
 			password: password.value,
 		}
-		registerMutation.executeMutation(variables).then(result => {
-			if (result.data?.register.errors) {
-				userRegisterError.state.value = true
-				const errorMessage = toErrorMap(result.data?.register.errors);
+		loginMutation.executeMutation({ options: variables }).then(result => {
+			if (result.data?.login.errors) {
+				userLoginError.state.value = true
+				const errorMessage = toErrorMap(result.data?.login.errors);
 				for (const key in errorMessage) {
 					if (errorMessage[key] !== undefined) {
-						userRegisterError.message.value = errorMessage[key];
+						userLoginError.message.value = errorMessage[key];
 					}
 				}
-				/* userRegisterError.message.value; */
-				/* console.log(toErrorMap(result.data?.register.errors)) */
+			} else {
+				router.push("/")
 			}
-			/* console.log("after execution: ", result.data?.register as UserResponse); */
 		})
-		console.log("data: ", registerMutation.data.value);
-		console.log("error: ", registerMutation.error.value);
-		console.log("fetching: ", registerMutation.fetching.value);
+		console.log("data: ", loginMutation.data.value);
+		console.log("error: ", loginMutation.error.value);
+		console.log("fetching: ", loginMutation.fetching.value);
 	}
 </script>
 
@@ -70,20 +67,7 @@ import { toErrorMap } from "../utils/toErrorMap"
 			<button type="submit" class="btn btn-success">Submit</button>
 		</form>
 		<div class="container mt-4">
-			<p v-if="userRegisterError.state.value">{{ userRegisterError.message.value }}</p>
+			<p v-if="userLoginError.state.value">{{ userLoginError.message.value }}</p>
 		</div>
-		<!-- <div class="container">
-			<div v-if="registerMutation.fetching">
-				Loading...
-			</div>
-			<div v-else-if="registerMutation.error">
-				Oh no ... {{ registerMutation.error }}
-			</div>
-			<div v-else="registerMutation.data">
-				<div v-if="registerMutation.data">
-					some user data: {{ registerMutation.data }}
-				</div>
-			</div>
-		</div> -->
 	</div>
 </template>

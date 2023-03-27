@@ -9,7 +9,7 @@
     "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "gen": "graphql-codegen --config codegen_graphql.ts"
+    "gen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@graphql-codegen/client-preset": "^2.1.1",
