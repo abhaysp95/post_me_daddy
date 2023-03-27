@@ -73,7 +73,7 @@ export class UserResolver {
     if (options.password.length <= 2) {
       return {
         errors: [ {
-          field : 'username',
+          field : 'password',
           message : 'Provided password with length > 2',
         } ]
       }
