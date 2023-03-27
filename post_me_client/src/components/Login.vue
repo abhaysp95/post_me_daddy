@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useMutation  } from '@urql/vue';
+import type { RegisterMutation, UserResponse } from '@/gql/graphql';
+/* import { graphql } from '../gql'; */
+import { toErrorMap } from "../utils/toErrorMap"
 
 	const username = ref("");
 	const password = ref("");
@@ -21,9 +24,11 @@ import { useMutation  } from '@urql/vue';
 		}`
 	);
 
-	const userFetching = registerMutation.fetching;
-	const userData = registerMutation.data;
-	const userError = registerMutation.error;
+
+	const userRegisterError = {
+		state: ref(false),
+		message: ref(""),
+	}
 
 	const onSubmit = () => {
 		console.log("form submitted", username.value, password.value)
@@ -32,11 +37,22 @@ import { useMutation  } from '@urql/vue';
 			password: password.value,
 		}
 		registerMutation.executeMutation(variables).then(result => {
-			console.log(result);
+			if (result.data?.register.errors) {
+				userRegisterError.state.value = true
+				const errorMessage = toErrorMap(result.data?.register.errors);
+				for (const key in errorMessage) {
+					if (errorMessage[key] !== undefined) {
+						userRegisterError.message.value = errorMessage[key];
+					}
+				}
+				/* userRegisterError.message.value; */
+				/* console.log(toErrorMap(result.data?.register.errors)) */
+			}
+			/* console.log("after execution: ", result.data?.register as UserResponse); */
 		})
-		console.log("data: ", registerMutation.data);
-		console.log("error: ", registerMutation.error);
-		console.log("fetching: ", registerMutation.fetching);
+		console.log("data: ", registerMutation.data.value);
+		console.log("error: ", registerMutation.error.value);
+		console.log("fetching: ", registerMutation.fetching.value);
 	}
 </script>
 
@@ -53,18 +69,21 @@ import { useMutation  } from '@urql/vue';
 			</div>
 			<button type="submit" class="btn btn-success">Submit</button>
 		</form>
-		<div class="container">
-			<div v-if="userFetching">
+		<div class="container mt-4">
+			<p v-if="userRegisterError.state.value">{{ userRegisterError.message.value }}</p>
+		</div>
+		<!-- <div class="container">
+			<div v-if="registerMutation.fetching">
 				Loading...
 			</div>
-			<div v-else-if="userError">
-				Oh no ... {{ userError}}
+			<div v-else-if="registerMutation.error">
+				Oh no ... {{ registerMutation.error }}
 			</div>
-			<div v-else="userData">
-				<div v-if="userData">
-					some user data: {{ userData }}
+			<div v-else="registerMutation.data">
+				<div v-if="registerMutation.data">
+					some user data: {{ registerMutation.data }}
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 </template>

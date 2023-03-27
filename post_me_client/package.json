@@ -8,9 +8,11 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "gen": "graphql-codegen --config codegen_graphql.ts"
   },
   "dependencies": {
+    "@graphql-codegen/client-preset": "^2.1.1",
     "@urql/vue": "^1.0.5",
     "@vue/compat": "^3.2.47",
     "bootstrap": "^5.2.3",
@@ -20,6 +22,7 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "3.2.2",
     "@types/bootstrap": "^5.2.6",
     "@types/jsdom": "^21.1.0",
     "@types/node": "^18.14.2",
